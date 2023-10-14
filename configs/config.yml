@@ -1,1 +1,10 @@
-#TODO: configs
+http:
+  host: "localhost"
+  port: 9090
+  timeout: 10s
+  idle_timeout: 60s
+db:
+  idle_timeout: 30s
+  port: 5555
+  username: postgres
+  password: qwerty
