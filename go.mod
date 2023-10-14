@@ -2,7 +2,11 @@ module url-short
 
 go 1.21.3
 
-require github.com/spf13/viper v1.17.0
+require (
+	github.com/jmoiron/sqlx v1.3.5
+	github.com/lib/pq v1.10.9
+	github.com/spf13/viper v1.17.0
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect

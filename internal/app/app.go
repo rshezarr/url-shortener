@@ -1,9 +1,11 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"url-short/internal/config"
 	"url-short/internal/logging"
+	"url-short/pkg/database/postgre"
 )
 
 func Run() {
@@ -11,11 +13,16 @@ func Run() {
 		log.Fatalf("error occured while parsing configs: %v", err)
 	}
 
-	_ = config.GetConfig()
+	cfg := config.GetConfig()
 
-	_ = logging.InitLogger()
+	logger := logging.InitLogger()
 
-	// TODO: init database
+	_, err := postgre.ConnectDB(cfg)
+	if err != nil {
+		logger.Error(fmt.Sprintf("database connection failed: %v", err))
+		return
+	}
+	logger.Info("database connected successful")
 
 	// TODO: init layers
 

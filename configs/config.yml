@@ -1,10 +1,14 @@
 http:
+  timeout: 10s
+  idleTimeout: 60s
   host: "localhost"
   port: 9090
-  timeout: 10s
-  idle_timeout: 60s
-db:
-  idle_timeout: 30s
-  port: 5555
-  username: postgres
-  password: qwerty
+
+database:
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  driver: "postgres"
+  password: "qwerty"
+  dbName: "postgres"
+  dbIdleTimeout: 30

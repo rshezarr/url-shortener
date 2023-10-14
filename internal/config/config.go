@@ -4,25 +4,29 @@ import (
 	"flag"
 	"github.com/spf13/viper"
 	"log"
+	"time"
 )
 
 type Configuration struct {
 	HTTP     HTTP `yaml:"http"`
-	Database DB   `yaml:"db"`
+	Database DB   `yaml:"database"`
 }
 
 type HTTP struct {
-	Host        string `yaml:"host"`
-	Port        int    `yaml:"port"`
-	Timeout     string `yaml:"timeout"`
-	IdleTimeout string `yaml:"idle_timeout"`
+	Host        string        `yaml:"host"`
+	Timeout     time.Duration `yaml:"timeout"`
+	IdleTimeout time.Duration `yaml:"idleTimeout"`
+	Port        int           `yaml:"port"`
 }
 
 type DB struct {
-	IdleTimeout string `yaml:"idle_timeout"`
-	Port        int    `yaml:"port"`
-	Username    string `yaml:"username"`
-	Password    string `yaml:"password"`
+	Host          string `yaml:"host"`
+	DbIdleTimeout int    `yaml:"dbIdleTimeout"`
+	Username      string `yaml:"username"`
+	Password      string `yaml:"password"`
+	Driver        string `yaml:"driver"`
+	Port          int    `yaml:"port"`
+	DbName        string `yaml:"dbName"`
 }
 
 func InitConfig() error {
@@ -34,7 +38,7 @@ func InitConfig() error {
 
 	//set config file path, name and type
 	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
+	viper.SetConfigType("yml")
 	viper.AddConfigPath(*configPath)
 
 	//read config by property above
