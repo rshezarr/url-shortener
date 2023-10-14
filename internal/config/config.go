@@ -33,7 +33,7 @@ func InitConfig() error {
 	flag.Parse()
 
 	//set config file path, name and type
-	viper.SetConfigName("configs")
+	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(*configPath)
 

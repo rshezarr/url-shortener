@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"url-short/internal/config"
 )
@@ -10,7 +11,9 @@ func Run() {
 		log.Fatalf("error occured while parsing configs: %v", err)
 	}
 
-	_ = config.GetConfig()
+	//_ = config.GetConfig()
+
+	fmt.Println(config.GetConfig())
 
 	// TODO: init logger
 
