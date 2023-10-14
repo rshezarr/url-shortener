@@ -41,7 +41,7 @@ func InitConfig() error {
 	return viper.ReadInConfig()
 }
 
-func GetConfig(cfgPath *string) *Configuration {
+func GetConfig() *Configuration {
 	configs := new(Configuration)
 
 	if err := viper.Unmarshal(&configs); err != nil {
