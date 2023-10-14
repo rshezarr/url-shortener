@@ -3,6 +3,7 @@ package app
 import (
 	"log"
 	"url-short/internal/config"
+	"url-short/internal/logging"
 )
 
 func Run() {
@@ -12,7 +13,7 @@ func Run() {
 
 	_ = config.GetConfig()
 
-	// TODO: init logger
+	_ = logging.InitLogger()
 
 	// TODO: init database
 
