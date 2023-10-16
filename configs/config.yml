@@ -3,6 +3,7 @@ http:
   idleTimeout: 60s
   host: "localhost"
   port: 9090
+  headerBytes: 1
 
 database:
   host: "localhost"

@@ -16,7 +16,8 @@ type HTTP struct {
 	Host        string        `yaml:"host"`
 	Timeout     time.Duration `yaml:"timeout"`
 	IdleTimeout time.Duration `yaml:"idleTimeout"`
-	Port        int           `yaml:"port"`
+	Port        string        `yaml:"port"`
+	HeaderBytes int           `yaml:"headerBytes"`
 }
 
 type DB struct {
