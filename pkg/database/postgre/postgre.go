@@ -7,7 +7,13 @@ import (
 	"url-short/internal/config"
 )
 
-func ConnectDB(cfg *config.Configuration) (*sqlx.DB, error) {
+type Database struct {
+	DB *sqlx.DB
+}
+
+func ConnectPSQL(cfg *config.Configuration) (*Database, error) {
+	psql := new(Database)
+
 	db, err := sqlx.Connect(
 		cfg.Database.Driver,
 		fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable",
@@ -21,13 +27,21 @@ func ConnectDB(cfg *config.Configuration) (*sqlx.DB, error) {
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS url_storage (
 		    id SERIAL PRIMARY KEY,
-		    url VARCHAR,
-		    alias VARCHAR(50)
-		)
+		    url TEXT NOT NULL,
+		    alias TEXT NOT NULL UNIQUE
+		);
+		
+		CREATE INDEX IF NOT EXISTS idx_alias ON url_storage(alias);
 	`)
 	if err != nil {
 		return nil, err
 	}
 
-	return db, err
+	psql.DB = db
+
+	return psql, nil
+}
+
+func (d *Database) CloseBD() error {
+	return d.DB.Close()
 }

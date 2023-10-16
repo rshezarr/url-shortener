@@ -3,13 +3,16 @@ package config
 import (
 	"flag"
 	"github.com/spf13/viper"
-	"log"
+	"log/slog"
+	"os"
 	"time"
+	"url-short/internal/logging"
 )
 
 type Configuration struct {
 	HTTP     HTTP `yaml:"http"`
 	Database DB   `yaml:"database"`
+	Logger   *slog.Logger
 }
 
 type HTTP struct {
@@ -30,7 +33,7 @@ type DB struct {
 	DbName        string `yaml:"dbName"`
 }
 
-func InitConfig() error {
+func initConfig() error {
 	//set flag
 	var configPath = flag.String("config-path", "configs/", "path to config file")
 
@@ -49,9 +52,17 @@ func InitConfig() error {
 func GetConfig() *Configuration {
 	configs := new(Configuration)
 
-	if err := viper.Unmarshal(&configs); err != nil {
-		log.Fatal(err)
+	if err := initConfig(); err != nil {
+		slog.Error("error occurred while parsing configs: %v", err)
+		os.Exit(1)
 	}
+
+	if err := viper.Unmarshal(&configs); err != nil {
+		slog.Error("error occurred while parsing configs: %v", err)
+		os.Exit(1)
+	}
+
+	configs.Logger = logging.InitLogger()
 
 	return configs
 }

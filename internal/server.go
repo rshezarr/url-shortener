@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"url-short/internal/config"
 )
@@ -11,9 +12,10 @@ type Server struct {
 	ServerErrorNotify chan error
 }
 
-func NewServer(cfg *config.Configuration) *Server {
+func NewServer(cfg *config.Configuration, handler *chi.Mux) *Server {
 	return &Server{
 		srv: &http.Server{
+			Handler:        handler,
 			Addr:           ":" + cfg.HTTP.Port,
 			ReadTimeout:    cfg.HTTP.Timeout,
 			WriteTimeout:   cfg.HTTP.Timeout,

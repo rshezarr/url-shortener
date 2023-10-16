@@ -1,30 +1,59 @@
 package app
 
 import (
-	"fmt"
-	"log"
+	"context"
+	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
+	"url-short/internal"
 	"url-short/internal/config"
-	"url-short/internal/logging"
+	v1 "url-short/internal/http/v1"
+	"url-short/internal/repository"
+	"url-short/internal/service"
 	"url-short/pkg/database/postgre"
 )
 
 func Run() {
-	if err := config.InitConfig(); err != nil {
-		log.Fatalf("error occured while parsing configs: %v", err)
-	}
-
 	cfg := config.GetConfig()
+	cfg.Logger.Info("config initialized")
 
-	logger := logging.InitLogger()
-
-	_, err := postgre.ConnectDB(cfg)
+	psql, err := postgre.ConnectPSQL(cfg)
 	if err != nil {
-		logger.Error(fmt.Sprintf("database connection failed: %v", err))
+		cfg.Logger.Info("database connection failed: ", slog.String("error", err.Error()))
 		return
 	}
-	logger.Info("database connected successful")
+	cfg.Logger.Info("database connected successfully")
 
-	// TODO: init layers
+	repo := repository.NewRepository(psql.DB)
+	svc := service.NewService(repo)
+	ctrl := v1.NewController(svc)
 
-	// TODO: init server
+	srv := internal.NewServer(cfg, ctrl.InitRoutes())
+	cfg.Logger.Info("server created successfully")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+
+	go func() {
+		cfg.Logger.Info("server started", slog.String("server-port", cfg.HTTP.Port))
+		srv.Run()
+	}()
+
+	select {
+	case sig := <-quit:
+		cfg.Logger.Info("app: signal accepted", slog.String("signal", sig.String()))
+	case err := <-srv.ServerErrorNotify:
+		cfg.Logger.Info("app: signal accepted", slog.String("error", err.Error()))
+	}
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		cfg.Logger.Error("error while shutting down server", slog.String("error", err.Error()))
+	}
+	slog.Info("server shutdown")
+
+	if err := psql.CloseBD(); err != nil {
+		cfg.Logger.Error("error while closing database", slog.String("error", err.Error()))
+	}
+	slog.Info("db closing")
 }

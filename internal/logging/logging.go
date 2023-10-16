@@ -8,7 +8,7 @@ import (
 func InitLogger() *slog.Logger {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	logger.Info("logging initialized")
+	logger.Info("logger initialized")
 
 	return logger
 }
